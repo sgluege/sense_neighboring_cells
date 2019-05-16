@@ -2,7 +2,7 @@
 Attempt to implement cells that can sense their local environment, and based on the neighboring cell types commit to apoptosis.
 
 
-Simulation is initialised with cells of type "S1". They grow and divide as long as less than 10 cells of the same type a in a radius of 1.2.
+Simulation is initialised with cells of type "S1". They grow and divide as long as less than 10 cells of the same type are in a radius of 1.2.
 
 
 ```

@@ -4,7 +4,7 @@ export_interval = 10
 
    [[visualize_sim_object]]
    name = "GRNCell"
-   additional_data_members = [ "diameter_", "cell_color_", "counter_sub_quant_"]
+   additional_data_members = [ "diameter_", "cell_color_"]
 
 
 #   [[visualize_diffusion]]

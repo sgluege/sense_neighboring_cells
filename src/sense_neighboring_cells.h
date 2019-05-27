@@ -22,7 +22,7 @@
 
 
 // set numer of simulation steps
-const int simulation_steps = 2500; // Time between two simulation steps equals: 0.01hours (default)
+const int simulation_steps = 100; // Time between two simulation steps equals: 0.01hours (default)
 
 //const double x_range = 150, y_range = 150, z_range = 4500; // set dims of simulation space
 //const double simulation_cube_dim = std::max(x_range, y_range);
@@ -30,7 +30,7 @@ const double simulation_cube_dim = 100;
 const double z_pos_precursor = 0 - (simulation_cube_dim/2); // (x/y range + z position)
 
 // number of precursor cells
-const size_t num_precursor_cells = 2;  // number of precursor cells (S1) in the simulation
+const size_t num_precursor_cells = 1;  // number of precursor cells (S1) in the simulation
 
 namespace bdm {
 

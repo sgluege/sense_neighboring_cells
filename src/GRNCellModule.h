@@ -7,7 +7,6 @@
 #define LAYERFORMATION_C_GRNCELLMODULE_H
 
 //#include "biodynamo.h"
-const double counter_sub_quant_threshold = 50; // threshold of intracellular substance ... when to switch biomodules
 const double default_cell_diameter = 6; // default diameter of new cells
 
 namespace bdm {
@@ -40,9 +39,18 @@ struct GRNModule : public BaseBiologyModule {
     void typeS1behaviour(T* cell){
 
         // find number of neighboring cells in a certain radius
-        const double sense_radius = 1.2;
-        int sameType = 0;
-        int otherType = 0;
+        const double sense_radius = 100.2;
+        int same_type = 0;
+        int other_type = 0;
+
+//        std::string act_type = cell->GetCellType();
+//        std::cout << "act cell type: " << act_type << std::endl;
+//        std::string some_type = "S1";
+//
+//        if (act_type == some_type) {
+//            std::cout << act_type << "==" << some_type << std::endl;
+//        }
+
 
         // lambda updating counters for cell neighbors
         auto countNeighbours = [&](const auto* neighbor) {
@@ -50,31 +58,25 @@ struct GRNModule : public BaseBiologyModule {
             if (neighbor->template IsSoType<GRNCell>()) {
                 auto n_soptr = neighbor->template
                         ReinterpretCast<GRNCell>()->GetSoPtr();
-                // if GRNCell have not the same type
-                if (!(n_soptr->GetCellType() == cell->GetCellType())) {
-                    // if GRNCell got the same type
-                    if (n_soptr->GetCellType() == cell->GetCellType()) {
-                        sameType++;
-                    }
-                    else {
-                        otherType++;
-                    }
-                }
-                else {
-                    sameType--;
+                // if GRNCell have the same type
+                if (n_soptr->GetCellType() == cell->GetCellType()) {
+                    same_type++;
+                } else {
+                    other_type++;
                 }
             }
         }; // end lambda
-
+//
         auto* ctxt = TSimulation::GetActive()->GetExecutionContext();
-//        auto* sim = TSimulation::GetActive();
         ctxt->ForEachNeighborWithinRadius(countNeighbours, *cell, sense_radius);
 
-//        std::cout << "#same neighbors: " << sameType << std::endl;
-//        std::cout << "#other neighbors: " << otherType << std::endl;
+//        std::cout << "same_type : " << same_type << std::endl;
+//        std::cout << "other_type : " << other_type << std::endl;
 
-        // cell differentiation
-        runCellCycleDiffStepS1(cell, sameType); // grow cell
+
+    // cell differentiation
+//        int sameType = 6;
+        runCellCycleDiffStepS1(cell, same_type); // grow cell
 
     }
 
@@ -87,15 +89,17 @@ struct GRNModule : public BaseBiologyModule {
     /// run cell differentiation step (used in type S1)
     /// grow cell and divide when max_diam is reached
     template <typename T, typename TSimulation = Simulation<>>
-    void runCellCycleDiffStepS1(T* cell, int sameCount){
+    void runCellCycleDiffStepS1(T* cell, int same_count){
         if (cell->GetDiameter() < cell->GetMaxDiam()) { // max_diam not reached
             cell->SetDiameter(cell->GetDiameter() + 0.2); // grow cell diameter by adding some number
         } else { // max diam reached -> divide cell
-            if (sameCount > 10){  // check if there are too many other cells around
+            if (same_count > 5){  // check if there are too many other cells around
                 std::cout << "kill cell due to too many other cells around" << std::endl;
                 typeA1behaviour(cell);
             } else {
                 auto &&daughter = cell->Divide();
+                std::cout << "can divide as sameCount is: " << same_count << std::endl;
+
                 daughter->SetDiameter(default_cell_diameter);  // init daughter with default diameter
             }
         }

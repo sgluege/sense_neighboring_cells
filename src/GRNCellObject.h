@@ -9,10 +9,9 @@
 //#include "biodynamo.h"
 
 // set parameters for initial cells (type S1)
-const double intracellular_substance_quantity = 100; // const double intracellular_substance_quantity = 100; //
+//const double intracellular_substance_quantity = 100; // const double intracellular_substance_quantity = 100; //
 const double s1max_diam = 10;
-const double s1sense_radius = 1.2;
-const std::string s1type = "S1";
+const std::string s1_type = "S1";
 //const double counter_sub_quant_threshold = 5; // threshold of intracellular substance ... when to switch biomodules
 //const double default_cell_diameter = 6; // default diameter of new cells
 
@@ -27,7 +26,7 @@ public:
     GRNCellExt() {}
     explicit GRNCellExt(const std::array<double, 3>& position) : Base(position) {
         // init cell with type S1, color, max_diam, and intracellular substance quantity
-        cell_type_[kIdx] = s1type;
+        cell_type_[kIdx] = s1_type;
         cell_max_diam_[kIdx] = s1max_diam;
         cell_color_[kIdx] = 0;
     }
@@ -36,6 +35,7 @@ public:
     template <typename TMother>
     GRNCellExt(const CellDivisionEvent& event, TMother* mother) : Base(event, mother) {
         cell_type_[kIdx] = mother->cell_type_[mother->kIdx];
+        cell_max_diam_[kIdx] = mother->cell_max_diam_[mother->kIdx];
         cell_color_[kIdx] = mother->cell_color_[mother->kIdx];
     }
 

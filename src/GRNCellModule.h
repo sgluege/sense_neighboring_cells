@@ -11,31 +11,33 @@ const double default_cell_diameter = 6; // default diameter of new cells
 
 namespace bdm {
 
-/// Define general GRNModule
 struct GRNModule : public BaseBiologyModule {
-    GRNModule() : BaseBiologyModule(gAllEventIds) {}
-    /// a single Cell Module that shall reproduce the behaviour of celles in different stages in the GRN
+    BDM_STATELESS_BM_HEADER(GRNModule, BaseBiologyModule, 1);
 
+public:
+    GRNModule() : BaseBiologyModule(gAllEventIds) {}
+    /// a single Cell Module that shall reproduce the behaviour of cells in different stages in the GRN
     /// Empty default event constructor, because GrowthModule does not have state.
     template <typename TEvent, typename TBm>
     GRNModule(const TEvent& event, TBm* other, uint64_t new_oid = 0)
             : BaseBiologyModule(event, other, new_oid) {}
 
-    template <typename T, typename TSimulation = Simulation<>>
-    void Run(T* cell) {
-       // read current cell types
-       const std::string& current_cell_type = cell->GetCellType();
+    void Run(SimObject* so) override {
+        if (auto *cell = dynamic_cast<GRNCell *>(so)) {
+            // read current cell types
+            const std::string &current_cell_type = cell->GetCellType();
 
-        // run cell behaviour depending on cell type
-        if (current_cell_type == "S1"){
-            typeS1behaviour(cell);
-        } else {
-            std::cout << "no behaviour defined for cell of type: " << current_cell_type << std::endl;
+            // run cell behaviour depending on cell type
+            if (current_cell_type == "S1") {
+                typeS1behaviour(cell);
+            } else {
+                std::cout << "no behaviour defined for cell of type: " << current_cell_type << std::endl;
+            }
         }
     }
 
     // define behaviour of cell type S1
-    template <typename T, typename TSimulation = Simulation<>>
+    template <typename T, typename TSimulation = Simulation>
     void typeS1behaviour(T* cell){
 
         // find number of neighboring cells in a certain radius
@@ -50,7 +52,6 @@ struct GRNModule : public BaseBiologyModule {
 //        if (act_type == some_type) {
 //            std::cout << act_type << "==" << some_type << std::endl;
 //        }
-
 
         // lambda updating counters for cell neighbors
         auto countNeighbours = [&](const auto* neighbor) {
@@ -81,14 +82,14 @@ struct GRNModule : public BaseBiologyModule {
     }
 
     /// define apoptosis 1 behaviour
-    template <typename T, typename TSimulation = Simulation<>>
+    template <typename T, typename TSimulation = Simulation>
     void typeA1behaviour(T* cell){
         cell->RemoveFromSimulation();
     }
 
     /// run cell differentiation step (used in type S1)
     /// grow cell and divide when max_diam is reached
-    template <typename T, typename TSimulation = Simulation<>>
+    template <typename T, typename TSimulation = Simulation>
     void runCellCycleDiffStepS1(T* cell, int same_count){
         if (cell->GetDiameter() < cell->GetMaxDiam()) { // max_diam not reached
             cell->SetDiameter(cell->GetDiameter() + 0.2); // grow cell diameter by adding some number
@@ -104,10 +105,6 @@ struct GRNModule : public BaseBiologyModule {
             }
         }
     }
-
-
-private:
-    BDM_CLASS_DEF_NV(GRNModule, 1);
 };
 
 }

@@ -22,7 +22,7 @@
 
 
 // set numer of simulation steps
-const int simulation_steps = 100; // Time between two simulation steps equals: 0.01hours (default)
+const int simulation_steps = 1000; // Time between two simulation steps equals: 0.01hours (default)
 
 //const double x_range = 150, y_range = 150, z_range = 4500; // set dims of simulation space
 //const double simulation_cube_dim = std::max(x_range, y_range);
@@ -34,13 +34,6 @@ const size_t num_precursor_cells = 1;  // number of precursor cells (S1) in the 
 
 namespace bdm {
 
-// Define compile time parameter
-    BDM_CTPARAM() { BDM_CTPARAM_HEADER();
-        // add GRNObject to simulation
-        using SimObjectTypes = CTList<GRNCell>;
-        // add GRNModule to simulation
-        BDM_CTPARAM_FOR(bdm, GRNCell) { using BiologyModules = CTList<GRNModule>; };
-    };
 
 inline int Simulate(int argc, const char** argv) {
     // set space parameters of the simulation
@@ -51,7 +44,7 @@ inline int Simulate(int argc, const char** argv) {
         param->run_mechanical_interactions_ = true;
     };
 
-    Simulation<> simulation(argc, argv, set_param);
+    Simulation simulation(argc, argv, set_param);
     auto* rm = simulation.GetResourceManager();  // get pointer to resource manager
     auto* random = simulation.GetRandom();  // get thread of local random number generator.
 
@@ -67,10 +60,6 @@ inline int Simulate(int argc, const char** argv) {
     double y_min = 0 - (simulation_cube_dim/2);
     double y_max = 0 + (simulation_cube_dim/2);
 
-    // allocate the correct number of cell in our cells structure before
-    // cell creation
-    rm->template Reserve<GRNCell>(num_precursor_cells);
-
     // create 2d Layer of cells
     for (size_t i = 0; i < num_precursor_cells; ++i) {
         // create coordinates for cells in 2D plate
@@ -79,12 +68,12 @@ inline int Simulate(int argc, const char** argv) {
         z_coord = z_pos_precursor;
 
         // creating the cell at position x, y, z
-        GRNCell cell({x_coord, y_coord, z_coord});
+        GRNCell* cell = new GRNCell({x_coord, y_coord, z_coord});
         // set cell parameters
-        cell.SetDiameter(default_cell_diameter);
-        cell.SetAdherence(0.0001);
-        cell.SetMass(0.1);
-        cell.AddBiologyModule(GRNModule());
+        cell->SetDiameter(default_cell_diameter);
+        cell->SetAdherence(0.0001);
+        cell->SetMass(0.1);
+        cell->AddBiologyModule(new GRNModule);
         rm->push_back(cell);// put the created cell in our cells structure
     }
 

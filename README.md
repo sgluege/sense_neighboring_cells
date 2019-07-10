@@ -13,5 +13,5 @@ Simulation is initialised with cells of type "S1". They grow and divide as long 
 
 Biodynamo version:
 ```
-BioDynaMo v0.1.0-152-ge3d39e63
+BioDynaMo v0.1.0-374-g59d6ef77
 ```

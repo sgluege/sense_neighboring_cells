@@ -45,38 +45,29 @@ public:
         int same_type = 0;
         int other_type = 0;
 
-//        std::string act_type = cell->GetCellType();
-//        std::cout << "act cell type: " << act_type << std::endl;
-//        std::string some_type = "S1";
-//
-//        if (act_type == some_type) {
-//            std::cout << act_type << "==" << some_type << std::endl;
-//        }
-
         // lambda updating counters for cell neighbors
-        auto countNeighbours = [&](const auto* neighbor) {
-            // if neighbor is a GRNCell
-            if (neighbor->template IsSoType<GRNCell>()) {
-                auto n_soptr = neighbor->template
-                        ReinterpretCast<GRNCell>()->GetSoPtr();
-                // if GRNCell have the same type
-                if (n_soptr->GetCellType() == cell->GetCellType()) {
+        auto countNeighbours = [&](const SimObject* neighbor_so) {
+            // check for GRNCell type in neighborhood
+            //  if(neighbor_so->GetTypeName() == "GRNCell") {
+            if(std::strcmp(neighbor_so->GetTypeName(), "GRNCell") == 0) {  // compare actual strings not pointers
+                // std::cout << "found GRNCell in neighborhood " << std::endl;
+
+                // cast SimObject to GRNCell
+                const auto *neighbor_cell = dynamic_cast<const GRNCell *>(neighbor_so);
+
+                // check cell type of neighboring GRNCell
+                if (neighbor_cell->GetCellType() == cell->GetCellType()) {
                     same_type++;
                 } else {
                     other_type++;
                 }
             }
-        }; // end lambda
-//
+        };
+
         auto* ctxt = TSimulation::GetActive()->GetExecutionContext();
         ctxt->ForEachNeighborWithinRadius(countNeighbours, *cell, sense_radius);
 
-//        std::cout << "same_type : " << same_type << std::endl;
-//        std::cout << "other_type : " << other_type << std::endl;
-
-
-    // cell differentiation
-//        int sameType = 6;
+        // do something based on the number of neighbors with the same type
         runCellCycleDiffStepS1(cell, same_type); // grow cell
 
     }

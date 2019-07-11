@@ -22,7 +22,7 @@
 
 
 // set numer of simulation steps
-const int simulation_steps = 1000; // Time between two simulation steps equals: 0.01hours (default)
+const int simulation_steps = 300; // Time between two simulation steps equals: 0.01hours (default)
 
 //const double x_range = 150, y_range = 150, z_range = 4500; // set dims of simulation space
 //const double simulation_cube_dim = std::max(x_range, y_range);

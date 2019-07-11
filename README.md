@@ -9,9 +9,12 @@ Simulation is initialised with cells of type "S1". They grow and divide as long 
 
 `runCellCycleDiffStepS1()` than grows the cell unti a max. diameter. It is then divided or killed depending on the number of neighbors with the same type within the radious.
 
----------------
+---------
+##### Known issues
+In the `build/` directory use `cmake -Ddict=off .. && make` to compile the simulation with the used biodynamo version.
 
-Biodynamo version:
+----------------
+##### Biodynamo version:
 ```
 BioDynaMo v0.1.0-374-g59d6ef77
 ```
